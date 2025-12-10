@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description:
     "With GouniBot, you don't no longer have to wait in desperation. Simply register your portal and let our bot do the work of waiting, end efficiently carrying out the process",
 
-  metadataBase: new URL("https://gounibot.site"),
+  metadataBase: new URL("https://gounibot.com"),
 
   icons: {
     apple: "/apple-touch-icon.png",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
     title: "GouniBot - Automatically book your desired hostel",
     description:
       "With GouniBot, you don't no longer have to wait in desperation. Simply register your portal and let our bot do the work of waiting, end efficiently carrying out the process",
-    url: "https://gounibot.site",
+    url: "https://gounibot.com",
     siteName: "GouniBot",
     images: [
       {

@@ -1,4 +1,3 @@
-// import { prisma } from "@/lib/prisma";
 "use server";
 import {
   changeDetailForm,
@@ -59,7 +58,7 @@ export const registerStudent = async (input: subscribeFormType) => {
         tx_ref: "sub_" + Date.now(),
         amount: 200,
         currency: "NGN",
-        redirect_url: "http://localhost:3000/verify-payment",
+        redirect_url: "https://gounibot.com/verify-payment",
         payment_options: "card",
         customer: {
           email,
@@ -132,7 +131,6 @@ export const confirmPortalDetail = async (input: registerFormType) => {
     }
 
     browser = await puppeteer.launch({
-      slowMo: 2,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
