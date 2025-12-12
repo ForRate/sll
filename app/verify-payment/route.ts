@@ -50,7 +50,7 @@ export const GET = async (request: Request) => {
     }
     const paymentTime = new Date(date).getTime();
     const currentTime = Date.now();
-    if (currentTime - paymentTime < 10 * 60 * 1000) {
+    if (currentTime - paymentTime < 180 * 1000) {
       return Response.json(
         {
           error: "Invalid subscription time",
