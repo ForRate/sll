@@ -84,11 +84,6 @@ export default function Home() {
           <code>2</code>), and <strong>bunk</strong> (e.g.,{" "}
           <code>Upper_Bunk</code>). Please ensure the necessary fees are paid
         </p>
-        <p>
-          Once the registration is completed, GoUni bot will send you a
-          screenshot of your portal to your email to clarify if it has
-          successfully access your portal
-        </p>
       </header>
 
       {successImageBuffer ? (

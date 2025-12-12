@@ -161,6 +161,20 @@ export const confirmPortalDetail = async (input: registerFormType) => {
 
     const buffer = await page.screenshot({ encoding: "base64" });
     await browser.close();
+    const roomBooked = await prismaClient.students.findFirst({
+      where: {
+        hostel: safeData.hostel,
+        bunk: safeData.bunk,
+        room: safeData.room,
+        block: safeData.block,
+      },
+    });
+    if (roomBooked) {
+      return {
+        success: false,
+        message: "Room has already been booked",
+      };
+    }
     await prismaClient.students.update({
       where: {
         email,
@@ -211,6 +225,15 @@ export const modifyPortalDetail = async (input: changeDetailFormType) => {
   const valid = bcrypt.compareSync(password, user.password);
   if (!valid) {
     throw new Error("Account Email or Password incorrect");
+  }
+
+  const roomBooked = await prismaClient.students.findFirst({
+    where: {
+      ...mainContent,
+    },
+  });
+  if (roomBooked) {
+    throw new Error("Room has already been booked");
   }
 
   await prismaClient.students.update({
