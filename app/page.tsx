@@ -67,8 +67,8 @@ export default function Home() {
         </p>
         <p>
           We need your <strong>GOUNI Portal Username</strong> and{" "}
-          <strong>Password</strong> to access your portal to book the hostel
-          automatically. We actual you that the bot is only programmed to book
+          <strong>Password</strong> to access your portal and to book the hostel
+          automatically. We assure you that the bot is only programmed to book
           hostels
         </p>
         <p>

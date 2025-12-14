@@ -65,7 +65,7 @@ export const registerStudent = async (input: subscribeFormType) => {
           name: data.email,
         },
         customizations: {
-          title: `GouniBot subscription `,
+          title: `GouniBot Subscription `,
         },
         meta: {
           email,
@@ -204,21 +204,20 @@ export const modifyPortalDetail = async (input: changeDetailFormType) => {
       message: "Incorrect input",
     };
   }
-  const { email, password, ...safeData } = data;
 
+  const { email, password, ...mainContent } = Object.fromEntries(
+    Object.entries(data).filter(
+      ([_, value]) => value !== undefined && value !== null && value !== ""
+    )
+  );
   const user = await prismaClient.students.findFirst({ where: { email } });
   if (!user) {
     throw new Error("Account Email or Password incorrect");
   }
 
-  const mainContent = Object.fromEntries(
-    Object.entries(safeData).filter(
-      ([_, value]) => value !== undefined && value !== null && value !== ""
-    )
-  );
   if (Object.keys(mainContent).length === 0) {
     throw new Error(
-      "No field has been updated, please check your connection and do not auto-complete but type"
+      "No field has been updated, please do not auto-complete but type"
     );
   }
 
@@ -227,13 +226,18 @@ export const modifyPortalDetail = async (input: changeDetailFormType) => {
     throw new Error("Account Email or Password incorrect");
   }
 
+  const info = { ...user, ...mainContent };
+
   const roomBooked = await prismaClient.students.findFirst({
     where: {
-      ...mainContent,
+      hostel: info.hostel,
+      bunk: info.bunk,
+      block: info.block,
+      room: info.room,
     },
   });
   if (roomBooked) {
-    throw new Error("Room has already been booked");
+    throw new Error("Room has been booked");
   }
 
   await prismaClient.students.update({
