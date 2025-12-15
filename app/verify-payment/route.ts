@@ -49,17 +49,12 @@ export const GET = async (request: Request) => {
       );
     }
     const paymentTime = new Date(date).getTime();
-    const currentTime = Date.now();
-    if (currentTime - paymentTime < 180 * 1000) {
-      return Response.json(
-        {
-          error: "Invalid subscription time",
-        },
-        {
-          status: 400,
-        }
-      );
+    const expiryTime = paymentTime + 30 * 60 * 1000;
+
+    if (Date.now() > expiryTime) {
+      return Response.json({ error: "Transaction expired" }, { status: 400 });
     }
+
     const encryptedPassword = bcrypt.hashSync(
       meta.password,
       bcrypt.genSaltSync(10)
