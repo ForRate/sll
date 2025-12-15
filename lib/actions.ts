@@ -10,7 +10,7 @@ import {
 import puppeteer from "puppeteer";
 import prismaClient from "@/lib/prisma";
 import bcrypt from "bcrypt";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 
 export const registerStudent = async (input: subscribeFormType) => {
   const { data, error } = subscribeForm.safeParse(input);
@@ -48,6 +48,12 @@ export const registerStudent = async (input: subscribeFormType) => {
         throw new Error("Email already exists");
       }
     }
+    const headersList = await headers();
+
+    const protocol = headersList.get("x-forwarded-proto") ?? "https";
+    const host = headersList.get("x-forwarded-host") ?? headersList.get("host");
+
+    const baseUrl = `${protocol}://${host}/verify-payment`;
     const response = await fetch("https://api.flutterwave.com/v3/payments", {
       method: "POST",
       headers: {
@@ -58,8 +64,7 @@ export const registerStudent = async (input: subscribeFormType) => {
         tx_ref: "sub_" + Date.now(),
         amount: 200,
         currency: "NGN",
-        redirect_url: "https://gounibot.com/verify-payment",
-        payment_options: "card",
+        redirect_url: baseUrl,
         customer: {
           email,
           name: data.email,
