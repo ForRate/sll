@@ -7,7 +7,9 @@ import {
   subscribeForm,
   subscribeFormType,
 } from "@/lib/propTypes";
-import puppeteer from "puppeteer";
+import chromium from "@sparticuz/chromium";
+import puppeteer from "puppeteer-core";
+
 import prismaClient from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import { cookies, headers } from "next/headers";
@@ -124,6 +126,7 @@ export const confirmPortalDetail = async (input: registerFormType) => {
   const { email, password, ...safeData } = data;
 
   let browser;
+
   try {
     const user = await prismaClient.students.findFirst({ where: { email } });
     if (!user) {
@@ -136,7 +139,8 @@ export const confirmPortalDetail = async (input: registerFormType) => {
     }
 
     browser = await puppeteer.launch({
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      args: chromium.args,
+      executablePath: await chromium.executablePath(),
     });
 
     const page = await browser.newPage();
