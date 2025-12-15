@@ -1,6 +1,6 @@
 import prismaClient from "@/lib/prisma";
 import bcrypt from "bcrypt";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 export const GET = async (request: Request) => {
   try {
     const { searchParams } = new URL(request.url);
@@ -81,8 +81,14 @@ export const GET = async (request: Request) => {
         password: encryptedPassword,
       },
     });
+    const headersList = await headers();
+
+    const protocol = headersList.get("x-forwarded-proto") ?? "http";
+    const host = headersList.get("x-forwarded-host") ?? headersList.get("host");
+
+    const baseUrl = `${protocol}://${host}`;
     (await cookies()).delete("hasLink");
-    return Response.redirect("http://localhost:3000");
+    return Response.redirect(baseUrl);
   } catch (error) {
     return Response.json(
       { error: "Server Error", details: error },
