@@ -137,11 +137,17 @@ export const confirmPortalDetail = async (input: registerFormType) => {
     if (!valid) {
       throw new Error("Account Email or Password incorrect");
     }
+    if (user.gouni_password || user.gouni_username) {
+      throw new Error(
+        "Your details has already been stored. If you wish to change your information, go to the change-info page"
+      );
+    }
 
-    browser = await puppeteer.launch({
+    const browser = await puppeteer.launch({
       args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
       executablePath: await chromium.executablePath(),
-      headless: true,
+      headless: "new",
     });
 
     const page = await browser.newPage();
