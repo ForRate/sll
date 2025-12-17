@@ -13,6 +13,7 @@ import prismaClient from "@/lib/prisma";
 import bcrypt from "bcrypt";
 import { cookies, headers } from "next/headers";
 
+export const runtime = "nodejs";
 export const registerStudent = async (input: subscribeFormType) => {
   const { data, error } = subscribeForm.safeParse(input);
   if (error) {
