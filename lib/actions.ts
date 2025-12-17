@@ -8,7 +8,7 @@ import {
   subscribeFormType,
 } from "@/lib/propTypes";
 import chromium from "@sparticuz/chromium";
-import puppeteer from "puppeteer-core";
+import puppeteer, { Browser } from "puppeteer-core";
 
 import prismaClient from "@/lib/prisma";
 import bcrypt from "bcrypt";
@@ -125,7 +125,7 @@ export const confirmPortalDetail = async (input: registerFormType) => {
   }
   const { email, password, ...safeData } = data;
 
-  let browser;
+  let browser: Browser | undefined;
 
   try {
     const user = await prismaClient.students.findFirst({ where: { email } });
