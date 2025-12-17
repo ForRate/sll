@@ -7,8 +7,7 @@ import {
   subscribeForm,
   subscribeFormType,
 } from "@/lib/propTypes";
-import chromium from "@sparticuz/chromium";
-import puppeteer, { Browser } from "puppeteer-core";
+import { chromium, Browser } from "playwright";
 
 import prismaClient from "@/lib/prisma";
 import bcrypt from "bcrypt";
@@ -143,20 +142,28 @@ export const confirmPortalDetail = async (input: registerFormType) => {
       );
     }
 
-    const browser = await puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath(),
-      headless: "new",
+    const roomBooked = await prismaClient.students.findFirst({
+      where: {
+        hostel: safeData.hostel,
+        bunk: safeData.bunk,
+        room: safeData.room,
+        block: safeData.block,
+      },
     });
+    if (roomBooked) {
+      throw new Error("Room already been booked");
+    }
+
+    const browser = await chromium.launch();
 
     const page = await browser.newPage();
     await page.goto("https://student.erp.gouni.edu.ng/", {
-      waitUntil: "networkidle2",
+      waitUntil: "networkidle",
       timeout: 30000,
     });
-    await page.type("input[name='username']", data.gouni_username);
-    await page.type("input[name='password']", data.gouni_password);
+
+    await page.locator("input[name='username']").fill(data.gouni_username);
+    await page.locator("input[name='password']").fill(data.gouni_password);
 
     await page.click("button");
 
@@ -175,22 +182,9 @@ export const confirmPortalDetail = async (input: registerFormType) => {
       throw new Error("Your portal username or password doesn't match");
     }
 
-    const buffer = await page.screenshot({ encoding: "base64" });
+    const buffer = (await page.screenshot()).toString("base64");
     await browser.close();
-    const roomBooked = await prismaClient.students.findFirst({
-      where: {
-        hostel: safeData.hostel,
-        bunk: safeData.bunk,
-        room: safeData.room,
-        block: safeData.block,
-      },
-    });
-    if (roomBooked) {
-      return {
-        success: false,
-        message: "Room has already been booked",
-      };
-    }
+
     await prismaClient.students.update({
       where: {
         email,
