@@ -7,7 +7,7 @@ import {
   subscribeForm,
   subscribeFormType,
 } from "@/lib/propTypes";
-import chromium from "@sparticuz/chromium";
+import chromium from "@sparticuz/chromium-min";
 import { Browser, launch } from "puppeteer-core";
 
 import prismaClient from "@/lib/prisma";
