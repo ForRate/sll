@@ -7,7 +7,8 @@ import {
   subscribeForm,
   subscribeFormType,
 } from "@/lib/propTypes";
-import { chromium, Browser } from "playwright";
+import chromium from "@sparticuz/chromium";
+import { Browser, launch } from "puppeteer-core";
 
 import prismaClient from "@/lib/prisma";
 import bcrypt from "bcrypt";
@@ -154,11 +155,15 @@ export const confirmPortalDetail = async (input: registerFormType) => {
       throw new Error("Room already been booked");
     }
 
-    const browser = await chromium.launch();
+    const browser = await launch({
+      args: chromium.args,
+      executablePath: await chromium.executablePath(),
+      headless: true,
+    });
 
     const page = await browser.newPage();
     await page.goto("https://student.erp.gouni.edu.ng/", {
-      waitUntil: "networkidle",
+      waitUntil: "networkidle2",
       timeout: 30000,
     });
 
@@ -182,7 +187,7 @@ export const confirmPortalDetail = async (input: registerFormType) => {
       throw new Error("Your portal username or password doesn't match");
     }
 
-    const buffer = (await page.screenshot()).toString("base64");
+    const buffer = await page.screenshot({ encoding: "base64" });
     await browser.close();
 
     await prismaClient.students.update({
