@@ -7,6 +7,7 @@ import {
   registerFormType,
   subscribeForm,
   subscribeFormType,
+  testBotForm,
   testBotFormType,
 } from "@/lib/propTypes";
 import chromium from "@sparticuz/chromium-min";
@@ -248,52 +249,59 @@ export const modifyPortalDetail = async (input: changeDetailFormType) => {
       ([_, value]) => value !== undefined && value !== null && value !== ""
     )
   );
-  const user = await prismaClient.students.findFirst({ where: { email } });
-  if (!user) {
-    throw new Error("Account Email or Password incorrect");
+  try {
+    const user = await prismaClient.students.findFirst({ where: { email } });
+    if (!user) {
+      throw new Error("Account Email or Password incorrect");
+    }
+
+    if (Object.keys(mainContent).length === 0) {
+      throw new Error(
+        "No field has been updated, please do not auto-complete but type"
+      );
+    }
+
+    const valid = bcrypt.compareSync(password, user.password);
+    if (!valid) {
+      throw new Error("Account Email or Password incorrect");
+    }
+
+    const info = { ...user, ...mainContent };
+
+    const roomBooked = await prismaClient.students.findFirst({
+      where: {
+        hostel: info.hostel,
+        bunk: info.bunk,
+        block: info.block,
+        room: info.room,
+      },
+    });
+    if (roomBooked) {
+      throw new Error("Room has been booked");
+    }
+
+    await prismaClient.students.update({
+      where: {
+        email,
+      },
+      data: {
+        ...mainContent,
+      },
+    });
+    return {
+      success: true,
+      message: "Account updated",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error && error.message,
+    };
   }
-
-  if (Object.keys(mainContent).length === 0) {
-    throw new Error(
-      "No field has been updated, please do not auto-complete but type"
-    );
-  }
-
-  const valid = bcrypt.compareSync(password, user.password);
-  if (!valid) {
-    throw new Error("Account Email or Password incorrect");
-  }
-
-  const info = { ...user, ...mainContent };
-
-  const roomBooked = await prismaClient.students.findFirst({
-    where: {
-      hostel: info.hostel,
-      bunk: info.bunk,
-      block: info.block,
-      room: info.room,
-    },
-  });
-  if (roomBooked) {
-    throw new Error("Room has been booked");
-  }
-
-  await prismaClient.students.update({
-    where: {
-      email,
-    },
-    data: {
-      ...mainContent,
-    },
-  });
-  return {
-    success: true,
-    message: "Account updated",
-  };
 };
 
 export const testBot = async (input: testBotFormType) => {
-  const { data, error } = registerForm.safeParse(input);
+  const { data, error } = testBotForm.safeParse(input);
   if (error) {
     return {
       success: false,

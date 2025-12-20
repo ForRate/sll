@@ -16,13 +16,13 @@ export default function ChangeInfo() {
   } = useForm<changeDetailFormType>({
     resolver: zodResolver(changeDetailForm),
   });
-  const resetDetail = (data: changeDetailFormType) => {
-    modifyPortalDetail(data)
-      .then((res) => {
-        reset();
-        toast.success(res.message);
-      })
-      .catch((err) => toast.error(err.message));
+  const resetDetail = async (data: changeDetailFormType) => {
+    const response = await modifyPortalDetail(data);
+    if (response.success) {
+      reset();
+      return toast.success(response.message);
+    }
+    toast.error(response.message);
   };
 
   return (

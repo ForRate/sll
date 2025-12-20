@@ -71,7 +71,7 @@ export default function TestBot() {
             )}
 
             <input
-              type="password"
+              type="text"
               className={`${errors.gouni_password && "bg-red-300"}`}
               placeholder="Gouni Portal Password"
               {...register("gouni_password")}
