@@ -129,7 +129,7 @@ export const confirmPortalDetail = async (input: registerFormType) => {
   try {
     const user = await prismaClient.students.findFirst({ where: { email } });
     if (!user) {
-      throw new Error("This email has been subscribed");
+      throw new Error("This email has not been subscribed");
     }
 
     const valid = bcrypt.compareSync(password, user.password);
@@ -252,7 +252,7 @@ export const modifyPortalDetail = async (input: changeDetailFormType) => {
   try {
     const user = await prismaClient.students.findFirst({ where: { email } });
     if (!user) {
-      throw new Error("Account Email or Password incorrect");
+      throw new Error("This Email has not been subscribed");
     }
 
     if (Object.keys(mainContent).length === 0) {
