@@ -7,7 +7,7 @@ import {
   subscribeForm,
   subscribeFormType,
 } from "@/lib/propTypes";
-import chromium from "@sparticuz/chromium";
+import chromium from "@sparticuz/chromium-min";
 import { Browser, launch } from "puppeteer-core";
 
 import prismaClient from "@/lib/prisma";
@@ -154,11 +154,12 @@ export const confirmPortalDetail = async (input: registerFormType) => {
     if (roomBooked) {
       throw new Error("Room already been booked");
     }
-
+    const executablePath = await chromium.executablePath(
+      "https://github.com/sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar"
+    );
     const browser = await launch({
       args: chromium.args,
-      executablePath: await chromium.executablePath(),
-      headless: true,
+      executablePath: executablePath,
     });
 
     const page = await browser.newPage();
