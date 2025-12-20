@@ -92,10 +92,10 @@ export default function Home() {
           src={`data:image/png;base64,${successImageBuffer}`}
         />
       ) : (
-        <>
+        <div className="flex flex-col gap-4">
           <form
             onSubmit={sHandleSubmit(handleSubscription)}
-            className={`${styles.form} mb-4`}
+            className={`${styles.form} w-full`}
           >
             <p className="text-[20px] text-gray-500">Subscribe your email</p>
             <input
@@ -135,7 +135,10 @@ export default function Home() {
             </Link>
           </form>
 
-          <form onSubmit={handleSubmit(handleRegister)} className={styles.form}>
+          <form
+            onSubmit={handleSubmit(handleRegister)}
+            className={`${styles.form} w-full`}
+          >
             <p className="text-[20px] text-gray-500">
               Subscribe your email above if you haven&apos;t done so
             </p>
@@ -256,7 +259,7 @@ export default function Home() {
               Change Information
             </Link>
           </form>
-        </>
+        </div>
       )}
     </div>
   );

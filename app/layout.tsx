@@ -72,7 +72,7 @@ export default function RootLayout({
       <body className={` antialiased`}>
         <ToastContainer />
         {children}
-        <footer className={"text-[17px] text-center text-gray-400"}>
+        <footer className={"md:text-[17px] text-center text-gray-400"}>
           <p>
             Need help? Email us at <a>gounibot@outlook.com</a>
           </p>
