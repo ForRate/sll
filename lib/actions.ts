@@ -1,11 +1,13 @@
 "use server";
 import {
+  auth,
   changeDetailForm,
   changeDetailFormType,
   registerForm,
   registerFormType,
   subscribeForm,
   subscribeFormType,
+  testBotFormType,
 } from "@/lib/propTypes";
 import chromium from "@sparticuz/chromium-min";
 import { Browser, launch } from "puppeteer-core";
@@ -91,16 +93,12 @@ export const registerStudent = async (input: subscribeFormType) => {
       throw new Error("Error from payment system. Please contact us on");
     }
 
-    (await cookies()).set(
+    await saveCookie(
       "hasLink",
       JSON.stringify({
         email,
         link: fData.data.link,
-      }),
-      {
-        maxAge: 60,
-        httpOnly: true,
-      }
+      })
     );
 
     return {
@@ -130,7 +128,7 @@ export const confirmPortalDetail = async (input: registerFormType) => {
   try {
     const user = await prismaClient.students.findFirst({ where: { email } });
     if (!user) {
-      throw new Error("Account Email or Password incorrect");
+      throw new Error("This email has been subscribed");
     }
 
     const valid = bcrypt.compareSync(password, user.password);
@@ -154,9 +152,25 @@ export const confirmPortalDetail = async (input: registerFormType) => {
     if (roomBooked) {
       throw new Error("Room already been booked");
     }
-    const executablePath = await chromium.executablePath(
-      "https://github.com/sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar"
-    );
+
+    let executablePath: string;
+    let trailToken: string | undefined | auth = (await cookies()).get(
+      "trailToken"
+    )?.value;
+    if (!trailToken || !JSON.parse(trailToken).executablePath) {
+      executablePath = await chromium.executablePath(
+        "https://github.com/sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar"
+      );
+      trailToken = { executablePath, success: 0, testBotTrial: 0 };
+    } else {
+      trailToken = JSON.parse(trailToken) as auth;
+      if (trailToken.testBotTrial >= 8) {
+        throw new Error("You have exceeded trial limit");
+      }
+
+      executablePath = trailToken.executablePath;
+    }
+
     const browser = await launch({
       args: chromium.args,
       executablePath: executablePath,
@@ -187,6 +201,14 @@ export const confirmPortalDetail = async (input: registerFormType) => {
     if (errorExists) {
       throw new Error("Your portal username or password doesn't match");
     }
+
+    await saveCookie(
+      "trailToken",
+      JSON.stringify({
+        ...trailToken,
+        testBotTrail: trailToken.testBotTrial + 1,
+      })
+    );
 
     const buffer = await page.screenshot({ encoding: "base64" });
     await browser.close();
@@ -268,4 +290,102 @@ export const modifyPortalDetail = async (input: changeDetailFormType) => {
     success: true,
     message: "Account updated",
   };
+};
+
+export const testBot = async (input: testBotFormType) => {
+  const { data, error } = registerForm.safeParse(input);
+  if (error) {
+    return {
+      success: false,
+      message: "Incorrect input",
+    };
+  }
+
+  let browser: Browser | undefined;
+
+  try {
+    let executablePath: string;
+    let trailToken: string | undefined | auth = (await cookies()).get(
+      "trailToken"
+    )?.value;
+    if (!trailToken || !JSON.parse(trailToken).executablePath) {
+      executablePath = await chromium.executablePath(
+        "https://github.com/sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar"
+      );
+      trailToken = { executablePath, success: 0, testBotTrial: 0 };
+    } else {
+      trailToken = JSON.parse(trailToken) as auth;
+      if (trailToken.success >= 2 || trailToken.testBotTrial >= 6) {
+        throw new Error("You have exceeded trial limit");
+      }
+
+      executablePath = trailToken.executablePath;
+    }
+
+    const browser = await launch({
+      args: chromium.args,
+      executablePath: executablePath,
+    });
+
+    const page = await browser.newPage();
+    await page.goto("https://student.erp.gouni.edu.ng/", {
+      waitUntil: "networkidle2",
+      timeout: 30000,
+    });
+
+    await page.locator("input[name='username']").fill(data.gouni_username);
+    await page.locator("input[name='password']").fill(data.gouni_password);
+
+    await page.click("button");
+
+    const delay = (ms: number) =>
+      new Promise((resolve) => setTimeout(resolve, ms));
+
+    await delay(4000);
+
+    const errorExists = await page.$$eval("div", (divs) =>
+      divs.some((div) =>
+        div.textContent.includes("Invalid Username or Password")
+      )
+    );
+
+    await saveCookie(
+      "trailToken",
+      JSON.stringify({
+        ...trailToken,
+        testBotTrail: trailToken.testBotTrial + 1,
+      })
+    );
+
+    if (errorExists) {
+      throw new Error("Your portal username or password doesn't match");
+    }
+
+    const buffer = await page.screenshot({ encoding: "base64" });
+    await browser.close();
+
+    await saveCookie(
+      "trailToken",
+      JSON.stringify({ ...trailToken, success: trailToken.success + 1 })
+    );
+
+    return {
+      success: true,
+      buffer,
+    };
+  } catch (error) {
+    await browser?.close();
+    return {
+      success: false,
+      message: error instanceof Error && error.message,
+    };
+  }
+};
+
+const saveCookie = async (name: string, value: string) => {
+  (await cookies()).set(name, value, {
+    maxAge: 60 * 60 * 24,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+  });
 };

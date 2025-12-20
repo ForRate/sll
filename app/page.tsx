@@ -97,11 +97,11 @@ export default function Home() {
             onSubmit={sHandleSubmit(handleSubscription)}
             className={`${styles.form} mb-4`}
           >
-            <p>Subscribe your email first if you haven&apos;t done so</p>
+            <p className="text-[20px] text-gray-500">Subscribe your email</p>
             <input
               type="email"
               className={`${sError.email && "bg-red-300"}`}
-              placeholder="GOUNI Portal Email"
+              placeholder="Any email of your choice"
               {...sRegister("email")}
               required
             />
@@ -129,9 +129,16 @@ export default function Home() {
             >
               {sSubmitting ? <Loader /> : "Subscribe"}
             </button>
+
+            <Link href={"/test-bot"} className={`${styles.submit} text-center`}>
+              Or test our bot
+            </Link>
           </form>
           (
           <form onSubmit={handleSubmit(handleRegister)} className={styles.form}>
+            <p className="text-[20px] text-gray-500">
+              Subscribe your email above if you haven&apos;t done so
+            </p>
             <input
               className={`${errors.email && "bg-red-300"}`}
               placeholder="Account Email"

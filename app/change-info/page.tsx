@@ -28,9 +28,10 @@ export default function ChangeInfo() {
   return (
     <>
       <form onSubmit={handleSubmit(resetDetail)} className={styles.form}>
-        <small className="text-gray-500 text-2xl">
-          Choose the detail you want to change (This apply to those whose
-          account are recorded in our system)
+        <small className="text-gray-500 text-[20px]">
+          Input your subscribed email and password and choose any of the detail
+          you want to change (This apply to those whose account are recorded in
+          our system)
         </small>
         <input
           {...register("email")}
@@ -104,7 +105,7 @@ export default function ChangeInfo() {
         )}
 
         <button disabled={isSubmitting} type="submit" className={styles.submit}>
-          {isSubmitting ? <Loader /> : "Reset"}
+          {isSubmitting ? <Loader /> : "Reset Info"}
         </button>
         <Link href={"/"} className={`${styles.submit} text-center`}>
           Create Account
