@@ -134,7 +134,7 @@ export default function Home() {
               Or test our bot
             </Link>
           </form>
-          (
+
           <form onSubmit={handleSubmit(handleRegister)} className={styles.form}>
             <p className="text-[20px] text-gray-500">
               Subscribe your email above if you haven&apos;t done so
@@ -256,7 +256,6 @@ export default function Home() {
               Change Information
             </Link>
           </form>
-          )
         </>
       )}
     </div>
