@@ -67,12 +67,12 @@ export const registerStudent = async (input: subscribeFormType) => {
       },
       body: JSON.stringify({
         tx_ref: "sub_" + Date.now(),
-        amount: 200,
+        amount: 250,
         currency: "NGN",
         redirect_url: baseUrl,
         customer: {
           email,
-          name: data.email,
+          name: email,
         },
         customizations: {
           title: `GouniBot Subscription `,
@@ -165,7 +165,7 @@ export const confirmPortalDetail = async (input: registerFormType) => {
       trailToken = { executablePath, success: 0, testBotTrial: 0 };
     } else {
       trailToken = JSON.parse(trailToken) as auth;
-      if (trailToken.testBotTrial >= 8) {
+      if (trailToken.testBotTrial >= 5) {
         throw new Error("You have exceeded trial limit");
       }
 
@@ -191,7 +191,7 @@ export const confirmPortalDetail = async (input: registerFormType) => {
     const delay = (ms: number) =>
       new Promise((resolve) => setTimeout(resolve, ms));
 
-    await delay(4000);
+    await delay(3000);
 
     const errorExists = await page.$$eval("div", (divs) =>
       divs.some((div) =>
@@ -327,7 +327,11 @@ export const testBot = async (input: testBotFormType) => {
         throw new Error("You have exceeded trial limit");
       }
 
-      executablePath = trailToken.executablePath;
+      executablePath =
+        trailToken.executablePath ||
+        (await chromium.executablePath(
+          "https://github.com/sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar"
+        ));
     }
 
     const browser = await launch({
@@ -349,7 +353,7 @@ export const testBot = async (input: testBotFormType) => {
     const delay = (ms: number) =>
       new Promise((resolve) => setTimeout(resolve, ms));
 
-    await delay(4000);
+    await delay(3000);
 
     const errorExists = await page.$$eval("div", (divs) =>
       divs.some((div) =>
@@ -392,7 +396,7 @@ export const testBot = async (input: testBotFormType) => {
 
 const saveCookie = async (name: string, value: string) => {
   (await cookies()).set(name, value, {
-    maxAge: 60 * 60 * 24,
+    maxAge: 60 * 60 * 16,
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
   });

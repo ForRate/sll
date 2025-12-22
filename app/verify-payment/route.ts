@@ -40,7 +40,7 @@ export const GET = async (request: Request) => {
     const date = result.data.created_at;
 
     // Return extracted data
-    if (amount < 200) {
+    if (amount < 250) {
       return Response.json(
         {
           error: "Insufficient amount",

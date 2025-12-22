@@ -47,6 +47,8 @@ export default function TestBot() {
 
       {successImageBuffer ? (
         <img
+          width={100}
+          height={100}
           className={styles.form}
           src={`data:image/png;base64,${successImageBuffer}`}
         />
