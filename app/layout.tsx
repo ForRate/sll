@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     siteName: "GouniBot",
     images: [
       {
-        url: "/gouniBot.png",
+        url: "https://gounibot.com/gouniBot.png",
         width: 1200,
         height: 630,
         alt: "GouniBot Preview Image",
