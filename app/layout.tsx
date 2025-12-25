@@ -75,7 +75,7 @@ export default function RootLayout({
         {children}
         <footer className={"md:text-[17px] text-center text-gray-400"}>
           <p>
-            Need help? Email us at <a>gounibot@outlook.com</a>
+            Need help? Email us at <a>support@gounibot.com</a>
           </p>
         </footer>
       </body>

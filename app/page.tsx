@@ -73,7 +73,7 @@ export default function Home() {
           We aim at building solution in helping students across different
           schools to ease their stress. If you which to contact us or have an
           inquire or you want us to build things like this, please contact us at{" "}
-          <strong>gounibot@outlook.com</strong>
+          <strong>support@gounibot.com</strong>
         </p>
       </header>
 
