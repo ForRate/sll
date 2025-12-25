@@ -31,7 +31,7 @@ export default function ChangeInfo() {
         <small className="text-gray-500 text-[20px]">
           Input your subscribed email and password and choose any of the detail
           you want to change (This apply to those whose account are recorded in
-          our system)
+          the system)
         </small>
         <input
           {...register("email")}
@@ -105,7 +105,7 @@ export default function ChangeInfo() {
         )}
 
         <button disabled={isSubmitting} type="submit" className={styles.submit}>
-          {isSubmitting ? <Loader /> : "Reset Info"}
+          {isSubmitting ? <Loader /> : "Change Info"}
         </button>
         <Link href={"/"} className={`${styles.submit} text-center`}>
           Create Account

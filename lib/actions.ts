@@ -67,7 +67,7 @@ export const registerStudent = async (input: subscribeFormType) => {
       },
       body: JSON.stringify({
         tx_ref: "sub_" + Date.now(),
-        amount: 250,
+        amount: 200,
         currency: "NGN",
         redirect_url: baseUrl,
         customer: {
@@ -158,18 +158,27 @@ export const confirmPortalDetail = async (input: registerFormType) => {
     let trailToken: string | undefined | auth = (await cookies()).get(
       "trailToken"
     )?.value;
-    if (!trailToken || !JSON.parse(trailToken).executablePath) {
-      executablePath = await chromium.executablePath(
-        "https://github.com/sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar"
-      );
-      trailToken = { executablePath, success: 0, testBotTrial: 0 };
-    } else {
-      trailToken = JSON.parse(trailToken) as auth;
-      if (trailToken.testBotTrial >= 5) {
-        throw new Error("You have exceeded trial limit");
-      }
 
-      executablePath = trailToken.executablePath;
+    try {
+      if (!trailToken || !JSON.parse(trailToken).executablePath) {
+        executablePath = await chromium.executablePath(
+          "https://github.com/sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar"
+        );
+        trailToken = { executablePath, success: 0, testBotTrial: 0 };
+      } else {
+        trailToken = JSON.parse(trailToken) as auth;
+        if (trailToken.testBotTrial >= 8) {
+          throw new Error("You have exceeded trial limit");
+        }
+
+        executablePath =
+          trailToken.executablePath ||
+          (await chromium.executablePath(
+            "https://github.com/sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar"
+          ));
+      }
+    } catch {
+      throw new Error("Network Error, Please check your connection");
     }
 
     const browser = await launch({
@@ -316,22 +325,27 @@ export const testBot = async (input: testBotFormType) => {
     let trailToken: string | undefined | auth = (await cookies()).get(
       "trailToken"
     )?.value;
-    if (!trailToken || !JSON.parse(trailToken).executablePath) {
-      executablePath = await chromium.executablePath(
-        "https://github.com/sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar"
-      );
-      trailToken = { executablePath, success: 0, testBotTrial: 0 };
-    } else {
-      trailToken = JSON.parse(trailToken) as auth;
-      if (trailToken.success >= 2 || trailToken.testBotTrial >= 6) {
-        throw new Error("You have exceeded trial limit");
-      }
 
-      executablePath =
-        trailToken.executablePath ||
-        (await chromium.executablePath(
+    try {
+      if (!trailToken || !JSON.parse(trailToken).executablePath) {
+        executablePath = await chromium.executablePath(
           "https://github.com/sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar"
-        ));
+        );
+        trailToken = { executablePath, success: 0, testBotTrial: 0 };
+      } else {
+        trailToken = JSON.parse(trailToken) as auth;
+        if (trailToken.success >= 2 || trailToken.testBotTrial >= 6) {
+          throw new Error("You have exceeded trial limit");
+        }
+
+        executablePath =
+          trailToken.executablePath ||
+          (await chromium.executablePath(
+            "https://github.com/sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar"
+          ));
+      }
+    } catch {
+      throw new Error("Network Error, Please check your connection");
     }
 
     const browser = await launch({

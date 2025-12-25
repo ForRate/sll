@@ -40,17 +40,15 @@ export default function TestBot() {
           display an image of your portal logged in
         </p>
         <p>
-          This is to assure you that our bot can successfully book your hostel
+          This is to assure you that gounibot can successfully book your hostel
           with the necessary information
         </p>
       </header>
 
       {successImageBuffer ? (
         <img
-          width={100}
-          height={100}
-          className={styles.form}
           src={`data:image/png;base64,${successImageBuffer}`}
+          alt="Success"
         />
       ) : (
         <div>

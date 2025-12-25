@@ -66,10 +66,8 @@ export default function Home() {
           opens.
         </p>
         <p>
-          We need your <strong>GOUNI Portal Username</strong> and{" "}
-          <strong>Password</strong> to access your portal and to book the hostel
-          automatically. We assure you that the bot is only programmed to book
-          hostels
+          Input your <strong>GOUNI Portal Username</strong> and{" "}
+          <strong>Portal Password</strong> to book the hostel automatically.
         </p>
         <p>
           We aim at building solution in helping students across different
@@ -77,20 +75,11 @@ export default function Home() {
           inquire or you want us to build things like this, please contact us at{" "}
           <strong>gounibot@outlook.com</strong>
         </p>
-        <p>
-          Enter the <strong>hostel name</strong> as it appears (e.g.,{" "}
-          <code>SACRED HEART</code>), the <strong>block</strong> (e.g.,{" "}
-          <code>Block-C</code>), <strong>room number</strong> (e.g.,{" "}
-          <code>2</code>), and <strong>bunk</strong> (e.g.,{" "}
-          <code>Upper_Bunk</code>). Please ensure the necessary fees are paid
-        </p>
       </header>
 
       {successImageBuffer ? (
         <img
-          width={100}
-          height={100}
-          className={styles.form}
+          alt="success"
           src={`data:image/png;base64,${successImageBuffer}`}
         />
       ) : (
@@ -115,7 +104,7 @@ export default function Home() {
             <input
               type="password"
               className={`${sError.password && "bg-red-300"}`}
-              placeholder="Account Password"
+              placeholder="Set a password for your account"
               {...sRegister("password")}
               required
             />
@@ -136,6 +125,20 @@ export default function Home() {
               Or test our bot
             </Link>
           </form>
+
+          <header className={styles.hero}>
+            <p>
+              Enter the <strong>hostel name</strong> as it appears (e.g.,{" "}
+              <code>SACRED HEART</code>), the <strong>block</strong> (e.g.,{" "}
+              <code>Block-C</code>), <strong>room number</strong> (e.g.,{" "}
+              <code>2</code>), and <strong>bunk</strong> (e.g.,{" "}
+              <code>
+                002 Lower_Bunk or Lower_Bunk (for rooms that contains just two
+                people){" "}
+              </code>
+              ). Please ensure the necessary fees are paid
+            </p>
+          </header>
 
           <form
             onSubmit={handleSubmit(handleRegister)}

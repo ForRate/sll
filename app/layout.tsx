@@ -57,16 +57,17 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-TVBPKLZMKN"
+          src="https://www.googletagmanager.com/gtag/js?id=G-MVHFKSYPEG"
           strategy="afterInteractive"
         />
+
         <Script id="google-analytics" strategy="afterInteractive">
           {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'G-TVBPKLZMKN');
-          `}
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', 'G-MVHFKSYPEG');
+        `}
         </Script>
       </head>
       <body className={` antialiased`}>

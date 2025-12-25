@@ -40,7 +40,7 @@ export const GET = async (request: Request) => {
     const date = result.data.created_at;
 
     // Return extracted data
-    if (amount < 250) {
+    if (amount < 200) {
       return Response.json(
         {
           error: "Insufficient amount",
@@ -49,7 +49,7 @@ export const GET = async (request: Request) => {
       );
     }
     const paymentTime = new Date(date).getTime();
-    const expiryTime = paymentTime + 30 * 60 * 1000;
+    const expiryTime = paymentTime + 10 * 60 * 1000;
 
     if (Date.now() > expiryTime) {
       return Response.json({ error: "Transaction expired" }, { status: 400 });
