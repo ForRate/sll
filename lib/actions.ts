@@ -99,7 +99,8 @@ export const registerStudent = async (input: subscribeFormType) => {
       JSON.stringify({
         email,
         link: fData.data.link,
-      })
+      }),
+      1 / 12
     );
 
     return {
@@ -422,9 +423,9 @@ export const testBot = async (input: testBotFormType) => {
   }
 };
 
-const saveCookie = async (name: string, value: string) => {
+const saveCookie = async (name: string, value: string, hours = 16) => {
   (await cookies()).set(name, value, {
-    maxAge: 60 * 60 * 16,
+    maxAge: 60 * 60 * hours,
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
   });

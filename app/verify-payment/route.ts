@@ -49,7 +49,7 @@ export const GET = async (request: Request) => {
       );
     }
     const paymentTime = new Date(date).getTime();
-    const expiryTime = paymentTime + 10 * 60 * 1000;
+    const expiryTime = paymentTime + 20 * 60 * 1000;
 
     if (Date.now() > expiryTime) {
       return Response.json({ error: "Transaction expired" }, { status: 400 });
