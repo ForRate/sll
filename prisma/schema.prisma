@@ -18,6 +18,7 @@ model Students {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   gouni_password String?
   gouni_username String?
+  whatsapp_number Int?
 
   hostel String?
 

@@ -31,7 +31,7 @@ export const registerStudent = async (input: subscribeFormType) => {
       email: string;
       link: string;
     };
-    const { email, password } = data;
+    const { email, password, whatsapp_number } = data;
 
     let paymentLink: string | undefined | paymentLinkType = (
       await cookies()
@@ -47,7 +47,7 @@ export const registerStudent = async (input: subscribeFormType) => {
       }
     } else {
       const userExist = await prismaClient.students.findFirst({
-        where: { email },
+        where: { email, done: false },
       });
       if (userExist) {
         throw new Error("Email already exists");
@@ -67,7 +67,7 @@ export const registerStudent = async (input: subscribeFormType) => {
       },
       body: JSON.stringify({
         tx_ref: "sub_" + Date.now(),
-        amount: 200,
+        amount: 300,
         currency: "NGN",
         redirect_url: baseUrl,
         customer: {
@@ -80,6 +80,7 @@ export const registerStudent = async (input: subscribeFormType) => {
         meta: {
           email,
           password,
+          whatsapp_number,
         },
       }),
     });
@@ -100,7 +101,7 @@ export const registerStudent = async (input: subscribeFormType) => {
         email,
         link: fData.data.link,
       }),
-      1 / 12
+      1 / 12,
     );
 
     return {
@@ -142,7 +143,9 @@ export const confirmPortalDetail = async (input: registerFormType) => {
   let browser: Browser | undefined;
 
   try {
-    const user = await prismaClient.students.findFirst({ where: { email } });
+    const user = await prismaClient.students.findFirst({
+      where: { email, done: false },
+    });
     if (!user) {
       throw new Error("This email has not been subscribed");
     }
@@ -153,7 +156,7 @@ export const confirmPortalDetail = async (input: registerFormType) => {
     }
     if (user.gouni_password || user.gouni_username) {
       throw new Error(
-        "Your details has already been stored. If you wish to change your information, go to the change-info page"
+        "Your details has already been stored. If you wish to change your information, go to the change-info page",
       );
     }
 
@@ -163,6 +166,7 @@ export const confirmPortalDetail = async (input: registerFormType) => {
         bunk: safeData.bunk,
         room: safeData.room,
         block: safeData.block,
+        done: false,
       },
     });
     if (roomBooked) {
@@ -171,12 +175,12 @@ export const confirmPortalDetail = async (input: registerFormType) => {
 
     let executablePath: string;
     let trailToken: string | undefined | auth = (await cookies()).get(
-      "trailToken"
+      "trailToken",
     )?.value;
 
     if (!trailToken || !JSON.parse(trailToken).executablePath) {
       executablePath = await chromium.executablePath(
-        "https://github.com/sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar"
+        "https://github.com/sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar",
       );
       trailToken = { executablePath, success: 0, testBotTrial: 0 };
     } else {
@@ -188,7 +192,7 @@ export const confirmPortalDetail = async (input: registerFormType) => {
       executablePath =
         trailToken.executablePath ||
         (await chromium.executablePath(
-          "https://github.com/sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar"
+          "https://github.com/sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar",
         ));
     }
 
@@ -215,12 +219,12 @@ export const confirmPortalDetail = async (input: registerFormType) => {
     const delay = (ms: number) =>
       new Promise((resolve) => setTimeout(resolve, ms));
 
-    await delay(3000);
+    await delay(2000);
 
     const errorExists = await page.$$eval("div", (divs) =>
       divs.some((div) =>
-        div.textContent.includes("Invalid Username or Password")
-      )
+        div.textContent.includes("Invalid Username or Password"),
+      ),
     );
 
     if (errorExists) {
@@ -232,7 +236,7 @@ export const confirmPortalDetail = async (input: registerFormType) => {
       JSON.stringify({
         ...trailToken,
         testBotTrail: trailToken.testBotTrial + 1,
-      })
+      }),
     );
 
     const buffer = await page.screenshot({ encoding: "base64" });
@@ -270,18 +274,20 @@ export const modifyPortalDetail = async (input: changeDetailFormType) => {
 
   const { email, password, ...mainContent } = Object.fromEntries(
     Object.entries(data).filter(
-      ([_, value]) => value !== undefined && value !== null && value !== ""
-    )
+      ([_, value]) => value !== undefined && value !== null && value !== "",
+    ),
   );
   try {
-    const user = await prismaClient.students.findFirst({ where: { email } });
+    const user = await prismaClient.students.findFirst({
+      where: { email, done: false },
+    });
     if (!user) {
       throw new Error("This Email has not been subscribed");
     }
 
     if (Object.keys(mainContent).length === 0) {
       throw new Error(
-        "No field has been updated, please do not auto-complete but type"
+        "No field has been updated, please do not auto-complete but type",
       );
     }
 
@@ -298,6 +304,7 @@ export const modifyPortalDetail = async (input: changeDetailFormType) => {
         bunk: info.bunk,
         block: info.block,
         room: info.room,
+        done: false,
       },
     });
     if (roomBooked) {
@@ -338,12 +345,12 @@ export const testBot = async (input: testBotFormType) => {
   try {
     let executablePath: string;
     let trailToken: string | undefined | auth = (await cookies()).get(
-      "trailToken"
+      "trailToken",
     )?.value;
 
     if (!trailToken || !JSON.parse(trailToken).executablePath) {
       executablePath = await chromium.executablePath(
-        "https://github.com/sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar"
+        "https://github.com/sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar",
       );
       trailToken = { executablePath, success: 0, testBotTrial: 0 };
     } else {
@@ -355,7 +362,7 @@ export const testBot = async (input: testBotFormType) => {
       executablePath =
         trailToken.executablePath ||
         (await chromium.executablePath(
-          "https://github.com/sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar"
+          "https://github.com/sparticuz/chromium/releases/download/v123.0.0/chromium-v123.0.0-pack.tar",
         ));
     }
 
@@ -386,8 +393,8 @@ export const testBot = async (input: testBotFormType) => {
 
     const errorExists = await page.$$eval("div", (divs) =>
       divs.some((div) =>
-        div.textContent.includes("Invalid Username or Password")
-      )
+        div.textContent.includes("Invalid Username or Password"),
+      ),
     );
 
     await saveCookie(
@@ -395,7 +402,7 @@ export const testBot = async (input: testBotFormType) => {
       JSON.stringify({
         ...trailToken,
         testBotTrail: trailToken.testBotTrial + 1,
-      })
+      }),
     );
 
     if (errorExists) {
@@ -407,7 +414,7 @@ export const testBot = async (input: testBotFormType) => {
 
     await saveCookie(
       "trailToken",
-      JSON.stringify({ ...trailToken, success: trailToken.success + 1 })
+      JSON.stringify({ ...trailToken, success: trailToken.success + 1 }),
     );
 
     return {

@@ -46,6 +46,14 @@ export const metadata: Metadata = {
       "With GouniBot, you don't no longer have to wait in desperation. Simply register your portal and let our bot do the work of waiting, end efficiently carrying out the process",
     images: ["/gouniBot.png"],
   },
+  keywords: [
+    "gounibot",
+    "gouni",
+    "gouni hostel",
+    "Godfrey Okoye University",
+    "book hostel",
+    "gouni hostel automatically",
+  ],
 };
 
 export default function RootLayout({

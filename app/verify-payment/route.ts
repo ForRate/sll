@@ -11,7 +11,7 @@ export const GET = async (request: Request) => {
     if (!transactionId) {
       return Response.json(
         { error: "No transaction_id found" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -22,7 +22,7 @@ export const GET = async (request: Request) => {
         headers: {
           Authorization: `Bearer ${process.env.FLW_SECRET_KEY}`,
         },
-      }
+      },
     );
 
     const result = await verifyRes.json();
@@ -30,7 +30,7 @@ export const GET = async (request: Request) => {
     if (result.status !== "success") {
       return Response.json(
         { error: "Verification failed", details: result },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -40,16 +40,16 @@ export const GET = async (request: Request) => {
     const date = result.data.created_at;
 
     // Return extracted data
-    if (amount < 200) {
+    if (amount < 300) {
       return Response.json(
         {
           error: "Insufficient amount",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
     const paymentTime = new Date(date).getTime();
-    const expiryTime = paymentTime + 20 * 60 * 1000;
+    const expiryTime = paymentTime + 60 * 60 * 1000;
 
     if (Date.now() > expiryTime) {
       return Response.json({ error: "Transaction expired" }, { status: 400 });
@@ -57,37 +57,40 @@ export const GET = async (request: Request) => {
 
     const encryptedPassword = bcrypt.hashSync(
       meta.password,
-      bcrypt.genSaltSync(10)
+      bcrypt.genSaltSync(10),
     );
     const userExist = await prismaClient.students.findFirst({
       where: { email: meta.email },
     });
-    if (userExist) {
-      return Response.json(
-        {
-          error: "Email already exists",
-        },
-        { status: 400 }
-      );
-    }
-    await prismaClient.students.create({
-      data: {
-        email: meta.email,
-        password: encryptedPassword,
-      },
-    });
     const headersList = await headers();
-
     const protocol = headersList.get("x-forwarded-proto") ?? "http";
     const host = headersList.get("x-forwarded-host") ?? headersList.get("host");
 
     const baseUrl = `${protocol}://${host}`;
     (await cookies()).delete("hasLink");
+    if (userExist) {
+      await prismaClient.students.update({
+        where: { email: meta.email },
+        data: {
+          password: encryptedPassword,
+          whatsapp_number: meta.whatsapp_number,
+        },
+      });
+      return Response.redirect(baseUrl);
+    }
+    await prismaClient.students.create({
+      data: {
+        email: meta.email,
+        password: encryptedPassword,
+        whatsapp_number: meta.whatsapp_number,
+      },
+    });
+
     return Response.redirect(baseUrl);
   } catch (error) {
     return Response.json(
       { error: "Server Error", details: error },
-      { status: 500 }
+      { status: 500 },
     );
   }
 };

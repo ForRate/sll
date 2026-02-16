@@ -112,6 +112,19 @@ export default function Home() {
             {sError.password && (
               <p className="text-sm text-red-600">{sError.password.message}</p>
             )}
+            <input
+              type="text"
+              className={`${sError.password && "bg-red-300"}`}
+              placeholder="Whatsapp number"
+              {...sRegister("whatsapp_number")}
+              required
+            />
+
+            {sError.whatsapp_number && (
+              <p className="text-sm text-red-600">
+                {sError.whatsapp_number.message}
+              </p>
+            )}
 
             <button
               disabled={sSubmitting || isSubmitting}
