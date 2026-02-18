@@ -115,7 +115,7 @@ export default function Home() {
             <input
               type="text"
               className={`${sError.password && "bg-red-300"}`}
-              placeholder="Whatsapp number"
+              placeholder="Whatsapp number(Skip the 0 e.g 81234)"
               {...sRegister("whatsapp_number")}
               required
             />

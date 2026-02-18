@@ -39,7 +39,9 @@ export const registerForm = z.object({
 
 export const subscribeForm = z.object({
   email: z.email("Account Email is missing"),
-  whatsapp_number: z.string().length(11, "Your Number length is less than 11"),
+  whatsapp_number: z
+    .string()
+    .length(10, "Your Number should be 10. Skip the first zero e.g 81234"),
   password: z.string().min(6, "Account Password should be at least 6"),
 });
 export const testBotForm = z.object({
