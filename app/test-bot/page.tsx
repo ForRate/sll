@@ -8,6 +8,11 @@ import { testBot } from "@/lib/actions";
 import Loader from "@/app/loader";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import { Metadata } from "next";
+
+export const meta: Metadata = {
+  title: "Test Bot",
+};
 
 export default function TestBot() {
   const [successImageBuffer, setSuccessImageBuffer] = useState<string>();

@@ -4,9 +4,13 @@ import styles from "@/app/main.module.css";
 import { modifyPortalDetail } from "@/lib/actions";
 import { changeDetailForm, changeDetailFormType } from "@/lib/propTypes";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Metadata } from "next";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
+export const meta: Metadata = {
+  title: "Change Info",
+};
 export default function ChangeInfo() {
   const {
     reset,

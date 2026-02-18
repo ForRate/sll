@@ -4,17 +4,14 @@ import { cookies, headers } from "next/headers";
 export const GET = async (request: Request) => {
   try {
     const { searchParams } = new URL(request.url);
-
     // Get transaction ID sent from Flutterwave callback
     const transactionId = searchParams.get("transaction_id");
-
     if (!transactionId) {
       return Response.json(
         { error: "No transaction_id found" },
         { status: 400 },
       );
     }
-
     // Verify transaction with Flutterwave
     const verifyRes = await fetch(
       `https://api.flutterwave.com/v3/transactions/${transactionId}/verify`,
@@ -24,21 +21,17 @@ export const GET = async (request: Request) => {
         },
       },
     );
-
     const result = await verifyRes.json();
-
     if (result.status !== "success") {
       return Response.json(
         { error: "Verification failed", details: result },
         { status: 400 },
       );
     }
-
     // Extract payment details
     const amount = result.data.amount;
     const meta = result.data.meta;
     const date = result.data.created_at;
-
     // Return extracted data
     if (amount < 300) {
       return Response.json(
@@ -49,12 +42,10 @@ export const GET = async (request: Request) => {
       );
     }
     const paymentTime = new Date(date).getTime();
-    const expiryTime = paymentTime + 60 * 60 * 1000;
-
+    const expiryTime = paymentTime + 60 * 60 * 60 * 1000;
     if (Date.now() > expiryTime) {
       return Response.json({ error: "Transaction expired" }, { status: 400 });
     }
-
     const encryptedPassword = bcrypt.hashSync(
       meta.password,
       bcrypt.genSaltSync(10),
@@ -62,10 +53,10 @@ export const GET = async (request: Request) => {
     const userExist = await prismaClient.students.findFirst({
       where: { email: meta.email },
     });
+    const whatsapp_number = Number.parseInt(meta.whatsapp_number);
     const headersList = await headers();
     const protocol = headersList.get("x-forwarded-proto") ?? "http";
     const host = headersList.get("x-forwarded-host") ?? headersList.get("host");
-
     const baseUrl = `${protocol}://${host}`;
     (await cookies()).delete("hasLink");
     if (userExist) {
@@ -82,10 +73,9 @@ export const GET = async (request: Request) => {
       data: {
         email: meta.email,
         password: encryptedPassword,
-        whatsapp_number: meta.whatsapp_number,
+        whatsapp_number,
       },
     });
-
     return Response.redirect(baseUrl);
   } catch (error) {
     return Response.json(
