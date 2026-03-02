@@ -52,7 +52,7 @@ export default function ChangeInfo() {
         <input
           {...register("displayname")}
           type="text"
-          placeholder="Displayname(what people will see"
+          placeholder="Displayname(what people will see)"
           required
         />
         {errors.displayname && (
