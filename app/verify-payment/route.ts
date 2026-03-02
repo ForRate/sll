@@ -4,7 +4,6 @@ import { cookies, headers } from "next/headers";
 export const GET = async (request: Request) => {
   try {
     const { searchParams } = new URL(request.url);
-    // Get transaction ID sent from Flutterwave callback
     const transactionId = searchParams.get("transaction_id");
     if (!transactionId) {
       return Response.json(
@@ -12,7 +11,6 @@ export const GET = async (request: Request) => {
         { status: 400 },
       );
     }
-    // Verify transaction with Flutterwave
     const verifyRes = await fetch(
       `https://api.flutterwave.com/v3/transactions/${transactionId}/verify`,
       {

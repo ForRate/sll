@@ -9,6 +9,8 @@ import {
   subscribeFormType,
   testBotForm,
   testBotFormType,
+  testimonialSchema,
+  testimonialType,
 } from "@/lib/propTypes";
 import chromium from "@sparticuz/chromium-min";
 import { Browser, launch } from "puppeteer-core";
@@ -101,7 +103,7 @@ export const registerStudent = async (input: subscribeFormType) => {
         email,
         link: fData.data.link,
       }),
-      1 / 12,
+      2,
     );
 
     return {
@@ -436,4 +438,68 @@ const saveCookie = async (name: string, value: string, hours = 16) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
   });
+};
+
+export const sendReview = async (input: testimonialType) => {
+  try {
+    const { data, error } = testimonialSchema.safeParse(input);
+    if (error) throw new Error(error?.message);
+
+    const user = await prismaClient.students.findFirst({
+      where: {
+        email: data.email,
+        gouni_username: {
+          not: null,
+        },
+      },
+    });
+
+    if (!user) {
+      throw new Error("User did not use the platform");
+    }
+
+    const infoExist = await prismaClient.stars.findFirst({
+      where: {
+        OR: [{ email: user.email }, { display_name: data.displayname }],
+      },
+    });
+    if (infoExist) {
+      throw new Error("Display name or email already exists");
+    }
+
+    await prismaClient.stars.create({
+      data: {
+        hostel: user.hostel!,
+        email: user.email,
+        star: data.star,
+        message: data.message,
+        display_name: data.displayname,
+      },
+    });
+    return {
+      success: true,
+      message: "Successfully added",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error && error.message,
+    };
+  }
+};
+
+export const getReview = async () => {
+  try {
+    const reviews = await prismaClient.stars.findMany();
+
+    return {
+      success: true,
+      reviews,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error && error.message,
+    };
+  }
 };

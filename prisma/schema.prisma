@@ -46,3 +46,14 @@ model Students {
   modifiedDate DateTime? @updatedAt
   
 }
+
+model Stars{
+    id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  email String @unique 
+  message String
+  star Int
+  display_name String
+  hostel String
+  created_at DateTime @default(now())
+}

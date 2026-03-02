@@ -49,10 +49,25 @@ export const testBotForm = z.object({
   gouni_password: z.string("Your Gouni Portal Password is missing"),
 });
 
+export const testimonialSchema = z.object({
+  displayname: z
+    .string()
+    .min(3, "Your display name is missing")
+    .max(10, "Name too long"),
+  email: z.email("Account Email is missing"),
+
+  message: z.string().min(4, "Your hostel block is missing"),
+  star: z
+    .number()
+    .min(1, "Can't go below 1 star")
+    .max(5, "Can't go beyond 5 stars"),
+});
+
 export type subscribeFormType = z.infer<typeof subscribeForm>;
 export type testBotFormType = z.infer<typeof testBotForm>;
 export type registerFormType = z.infer<typeof registerForm>;
 export type changeDetailFormType = z.infer<typeof changeDetailForm>;
+export type testimonialType = z.infer<typeof testimonialSchema>;
 
 export type auth = {
   success: 0;
